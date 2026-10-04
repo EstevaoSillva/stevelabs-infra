@@ -17,7 +17,7 @@ Não há fluxos fixos. A cada pedido, um **agente coordenador** decide sozinho s
 
 Tudo é open source e roda em Docker.
 
-**Status:** POC para validação interna. Documento da ideia: `IDEIA_Plataforma_Agentes_SteveLab.md` (v3.4). Identidade visual: pasta `marca-steve-lab/` (guia de marca em PDF e ativos).
+**Status:** POC para validação interna. Documento da ideia: `IDEIA_Plataforma_Agentes_SteveLab.md` (v3.7), no repositório `stevelabs-sdd`. Identidade visual: pasta `marca-steve-lab/`, no mesmo repositório (guia de marca em PDF e ativos).
 
 ---
 
@@ -30,7 +30,7 @@ O modelo de IA virou commodity. A Steve Lab compete no que fica em volta dele:
 | # | Diferencial | Onde está na POC | Status |
 |---|---|---|---|
 | 1 | **IA que não sai da empresa** | Ollama, Qdrant, Langfuse e SeaweedFS locais; modo nativo sem Docker; nenhuma chamada a API externa | Pronto |
-| 2 | **Trabalho pronto, não conversa** | Exportador: PDF, DOCX e PPTX editável; CSS da identidade; `modelo.pptx` e `referencia.docx` do cliente | Pronto |
+| 2 | **Trabalho pronto, não conversa** | Artefatos em HTML + exportador: PDF, DOCX e PPTX editável (a página compartilhável com link, login e versões entra na Fase 2); CSS da identidade; `modelo.pptx` e `referencia.docx` do cliente | Pronto |
 | 3 | **Prova de que funciona** | Rastreamento de cada pedido, ferramenta e subagente no Langfuse; `teste-fumaca` | Parcial — falta regressão por agente e dono do dado |
 | 4 | **Segurança de IA** | SQL só leitura sem acesso a disco ou rede; bloqueio de caminho fora da pasta; limites de chamadas e de subagentes; chave de API | Parcial — falta aprovação humana, ataques simulados e perfis |
 | 5 | **Construir com quem vive a rotina** | Catálogo de ferramentas extensível: uma função Python registrada em `REGISTRO` | Parcial — falta o fluxo para o time do cliente propor e homologar agentes |
