@@ -1,0 +1,313 @@
+# =============================================================================
+#  POC — Plataforma de Agentes Steve Lab
+#  Stack 100% open source, sem fluxos fixos: o agente coordenador cria
+#  subagentes sob demanda (padrão "delegar tarefa", como o Claude faz).
+#
+#  PERFIS (defina COMPOSE_PROFILES no .env):
+#    (sem perfil) núcleo  → postgres, qdrant, agentes, exportador   ~2–3 GB RAM
+#    ui                   → librechat + mongodb                     ~1,5 GB
+#    llm                  → ollama + download dos modelos           depende do modelo
+#    docling              → docling-serve (PDF escaneado, tabelas)  ~8–10 GB
+#    obs                  → langfuse + clickhouse + redis + seaweedfs ~4–5 GB
+#
+#  Servidor (GPU):      COMPOSE_PROFILES=ui,llm,docling,obs
+#                       docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#  PC de aluno 16 GB:   COMPOSE_PROFILES=     (só o núcleo; LLM/Docling/Langfuse remotos)
+#  O código dos serviços fica no repositório stevelabs-back, clonado ao lado deste
+#  (../stevelabs-back). Outro caminho: defina STEVELABS_BACK no .env.
+#  Leia o README antes de subir.
+# =============================================================================
+
+name: poc-agentes-stevelab
+
+x-langfuse-env: &langfuse-env
+  DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/langfuse
+  NEXTAUTH_URL: ${URL_PUBLICA_LANGFUSE:-http://localhost:3000}
+  SALT: ${LANGFUSE_SALT:-}
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-}
+  TELEMETRY_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: clickhouse
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  # SeaweedFS no lugar do MinIO (S3 compatível, Apache 2.0)
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-}
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://seaweedfs:8333
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-}
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://seaweedfs:8333
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  # Se o SeaweedFS recusar exclusões com MissingContentMD5, descomente:
+  # LANGFUSE_S3_DELETE_OBJECTS_CHECKSUM_ALGORITHM: MD5
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: ${REDIS_PASSWORD:-}
+
+services:
+  # ───────────────────────────── NÚCLEO ─────────────────────────────
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      POSTGRES_DB: postgres
+      TZ: UTC          # o Langfuse exige banco em UTC
+      PGTZ: UTC
+    volumes:
+      - pg_dados:/var/lib/postgresql/data
+      - ./config/postgres-init:/docker-entrypoint-initdb.d:ro
+    ports: ["127.0.0.1:5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 512m
+
+  qdrant:
+    image: qdrant/qdrant:v1.19.1
+    restart: unless-stopped
+    volumes: [qdrant_dados:/qdrant/storage]
+    ports: ["127.0.0.1:6333:6333"]
+    mem_limit: 1g
+
+  exportador:
+    build: ${STEVELABS_BACK:-../stevelabs-back}/servicos/exportador
+    restart: unless-stopped
+    volumes:
+      - artefatos:/artefatos
+      - ./config/modelos:/modelos:ro      # referencia.docx / modelo.pptx próprios (opcional)
+    ports: ["127.0.0.1:8010:8010"]
+    shm_size: 256m                        # Chromium precisa de /dev/shm maior
+    mem_limit: 1g
+
+  agentes:
+    build: ${STEVELABS_BACK:-../stevelabs-back}/servicos/agentes
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      qdrant: { condition: service_started }
+      exportador: { condition: service_started }
+    environment:
+      OLLAMA_HOST: ${OLLAMA_HOST:?defina OLLAMA_HOST no .env}
+      MODELO_LLM: ${MODELO_LLM:?defina MODELO_LLM no .env}
+      MODELO_SUBAGENTE: ${MODELO_SUBAGENTE:-}
+      MODELO_EMBEDDING: ${MODELO_EMBEDDING:-qwen3-embedding:0.6b}
+      NUM_CTX: ${NUM_CTX:-16384}
+      MAX_PROFUNDIDADE_SUBAGENTES: ${MAX_PROFUNDIDADE_SUBAGENTES:-1}
+      LIMITE_CHAMADAS_FERRAMENTA: ${LIMITE_CHAMADAS_FERRAMENTA:-25}
+      QDRANT_URL: http://qdrant:6333
+      DOCLING_URL: ${DOCLING_URL:-}
+      DOCLING_API_KEY: ${DOCLING_API_KEY:-}
+      EXPORTADOR_URL: http://exportador:8010
+      URL_PUBLICA_AGENTES: ${URL_PUBLICA_AGENTES:-http://localhost:8000}
+      AGENTES_API_KEY: ${AGENTES_API_KEY:?defina AGENTES_API_KEY no .env}
+      SENHA_ARQUIVOS: ${SENHA_ARQUIVOS:-}
+      # Reservado para a fase 2 (sessões e memória persistentes do Agno):
+      AGNO_DB_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@postgres:5432/agentes
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      S3_BUCKET_ARTEFATOS: artefatos
+      AGNO_TELEMETRY: "false"
+      TZ: America/Manaus
+    volumes:
+      - ./dados/entrada:/dados/entrada    # arquivos que o agente pode ler
+      - artefatos:/artefatos              # HTML, PDF, DOCX e PPTX gerados
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    ports: ["${BIND_IP:-127.0.0.1}:8000:8000"]
+    mem_limit: 1536m
+
+  # ───────────────────────────── UI (perfil ui) ─────────────────────────────
+  mongodb:
+    image: mongo:8.0.20
+    profiles: ["ui"]
+    restart: unless-stopped
+    command: mongod --noauth --wiredTigerCacheSizeGB 0.25
+    volumes: [mongo_dados:/data/db]
+    mem_limit: 768m
+
+  librechat:
+    # Fixe uma versão estável antes de usar com turma (ex.: tag v0.8.x)
+    image: registry.librechat.ai/danny-avila/librechat-dev:latest
+    profiles: ["ui"]
+    restart: unless-stopped
+    depends_on: [mongodb, agentes]
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3080"
+      MONGO_URI: mongodb://mongodb:27017/LibreChat
+      SEARCH: "false"                      # dispensa o Meilisearch na POC
+      ALLOW_REGISTRATION: "true"
+      ALLOW_SOCIAL_LOGIN: "false"
+      DOMAIN_CLIENT: ${URL_PUBLICA_CHAT:-http://localhost:3080}
+      DOMAIN_SERVER: ${URL_PUBLICA_CHAT:-http://localhost:3080}
+      CREDS_KEY: ${LIBRECHAT_CREDS_KEY:-}
+      CREDS_IV: ${LIBRECHAT_CREDS_IV:-}
+      JWT_SECRET: ${LIBRECHAT_JWT_SECRET:-}
+      JWT_REFRESH_SECRET: ${LIBRECHAT_JWT_REFRESH_SECRET:-}
+      AGENTES_API_KEY: ${AGENTES_API_KEY}
+      OLLAMA_BASE_URL: ${OLLAMA_HOST}/v1
+      NO_INDEX: "true"
+      APP_TITLE: "Steve Lab · Agentes"
+      CUSTOM_FOOTER: "Steve Lab · Ideias → Dados → Impacto · POC"
+    volumes:
+      - ./config/librechat.yaml:/app/librechat.yaml:ro
+      - librechat_uploads:/app/uploads
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    ports: ["${BIND_IP:-127.0.0.1}:3080:3080"]
+    mem_limit: 1g
+
+  # ───────────────────────────── LLM (perfil llm) ─────────────────────────────
+  ollama:
+    image: ollama/ollama:latest            # fixe a versão após validar
+    profiles: ["llm"]
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: 30m
+      OLLAMA_NUM_PARALLEL: ${OLLAMA_NUM_PARALLEL:-4}
+      OLLAMA_MAX_LOADED_MODELS: "2"
+      OLLAMA_CONTEXT_LENGTH: ${NUM_CTX:-16384}
+    volumes: [ollama_modelos:/root/.ollama]
+    ports: ["${BIND_IP:-127.0.0.1}:11434:11434"]
+
+  ollama-baixar-modelos:
+    image: ollama/ollama:latest
+    profiles: ["llm"]
+    depends_on: [ollama]
+    restart: "no"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        sleep 5 &&
+        ollama pull ${MODELO_LLM} &&
+        ollama pull ${MODELO_EMBEDDING:-qwen3-embedding:0.6b} &&
+        if [ -n "${MODELO_SUBAGENTE:-}" ]; then ollama pull ${MODELO_SUBAGENTE}; fi &&
+        echo "Modelos prontos."
+
+  # ───────────────────────────── DOCLING (perfil docling) ─────────────────────
+  docling:
+    image: quay.io/docling-project/docling-serve-cpu:v1.32.0  # use -cu128/-cu130 com GPU
+    profiles: ["docling"]
+    restart: unless-stopped
+    environment:
+      DOCLING_SERVE_ENABLE_UI: "false"
+      DOCLING_SERVE_API_KEY: ${DOCLING_API_KEY:-}   # exige X-Api-Key (porta exposta ao laboratório)
+      UVICORN_WORKERS: "1"                 # cada worker duplica a memória dos modelos
+      DOCLING_SERVE_ENG_LOC_SHARE_MODELS: "true"
+      DOCLING_SERVE_MAX_DOCUMENT_TIMEOUT: "1800"   # padrão é 7 dias
+      DOCLING_SERVE_MAX_FILE_SIZE: "52428800"      # 50 MB
+      DOCLING_SERVE_MAX_NUM_PAGES: "300"
+    ports: ["${BIND_IP:-127.0.0.1}:5001:5001"]
+    mem_limit: 12g
+
+  # ───────────────────────────── OBSERVABILIDADE (perfil obs) ─────────────────
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest      # fixe a versão após validar
+    profiles: ["obs"]
+    restart: unless-stopped
+    command: ["mini"]                      # S3 em http://seaweedfs:8333, dados em /data
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-}
+      S3_BUCKET: langfuse,artefatos        # buckets criados no primeiro boot
+    volumes: [seaweed_dados:/data]
+    ports: ["${BIND_IP:-127.0.0.1}:8333:8333"]
+    mem_limit: 512m
+
+  redis:
+    image: redis:7
+    profiles: ["obs"]
+    restart: unless-stopped
+    command: >
+      --requirepass ${REDIS_PASSWORD:-}
+      --maxmemory-policy noeviction
+    volumes: [redis_dados:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    mem_limit: 256m
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.12
+    profiles: ["obs"]
+    restart: unless-stopped
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+    volumes:
+      - clickhouse_dados:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 3g
+
+  langfuse-worker:
+    image: docker.langfuse.com/langfuse/langfuse-worker:4
+    profiles: ["obs"]
+    restart: unless-stopped
+    depends_on: &langfuse-deps
+      postgres: { condition: service_healthy }
+      clickhouse: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      seaweedfs: { condition: service_started }
+    environment:
+      <<: *langfuse-env
+    mem_limit: 1g
+
+  langfuse-web:
+    image: docker.langfuse.com/langfuse/langfuse:4
+    profiles: ["obs"]
+    restart: unless-stopped
+    depends_on: *langfuse-deps
+    environment:
+      <<: *langfuse-env
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-}
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: ${URL_PUBLICA_S3:-http://localhost:8333}
+      LANGFUSE_S3_MEDIA_UPLOAD_INTERNAL_ENDPOINT: http://seaweedfs:8333
+      # Inicialização sem clique: organização, projeto, chaves e usuário admin
+      LANGFUSE_INIT_ORG_ID: stevelab
+      LANGFUSE_INIT_ORG_NAME: Steve Lab
+      LANGFUSE_INIT_PROJECT_ID: poc-agentes
+      LANGFUSE_INIT_PROJECT_NAME: POC Agentes
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_ADMIN_EMAIL:-}
+      LANGFUSE_INIT_USER_NAME: Administrador POC
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD:-}
+    ports: ["${BIND_IP:-127.0.0.1}:3000:3000"]
+    mem_limit: 1536m
+
+volumes:
+  pg_dados:
+  qdrant_dados:
+  artefatos:
+  mongo_dados:
+  librechat_uploads:
+  ollama_modelos:
+  seaweed_dados:
+  redis_dados:
+  clickhouse_dados:
+  clickhouse_logs:

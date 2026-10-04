@@ -1,0 +1,17 @@
+# Copie para C:\Users\<seu-usuario>\.wslconfig e rode, no PowerShell: wsl --shutdown
+#
+# O Docker Engine roda DENTRO do WSL2, então este limite vale para tudo:
+# Linux + Docker + contêineres. O que sobra fica para o Windows e o navegador.
+#
+#   Modo aluno (híbrido, modelo no servidor) ... memory=7GB   → Windows fica com ~9 GB
+#   Modo local (Ollama em contêiner) ........... memory=12GB  → Windows fica com ~4 GB
+#                                                  (feche o resto; só para demonstração)
+[wsl2]
+memory=7GB
+processors=4
+swap=4GB
+
+[experimental]
+# Devolve ao Windows a memória de cache que o Linux não usa mais (WSL 2.0 ou superior).
+# Se o "wsl" reclamar da opção, apague as duas linhas abaixo.
+autoMemoryReclaim=gradual

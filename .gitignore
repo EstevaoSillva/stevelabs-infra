@@ -1,0 +1,8 @@
+# ambiente e segredos
+.venv/
+.env
+# dados gerados em execução (modo nativo)
+dados/qdrant/
+dados/artefatos/
+dados/cache/
+__pycache__/

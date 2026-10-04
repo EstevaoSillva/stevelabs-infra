@@ -1,0 +1,121 @@
+﻿ID;Data abertura;Setor;Categoria;Prioridade;Status;Tempo de resolução (h);Custo estimado (R$)
+CH-0001;15/06/2026;Financeiro;Pagamento;Baixa;Fechado;9.8;938.37
+CH-0002;15/08/2026;Manutenção;Ferramental;Média;Fechado;18.8;1154.28
+CH-0003;04/06/2026;RH;Benefícios;Média;Aberto;11.1;873.47
+CH-0004;21/06/2026;Manutenção;Preventiva;Média;Fechado;11.0;623.27
+CH-0005;12/06/2026;Manutenção;Preventiva;Média;Fechado;12.7;612.89
+CH-0006;16/06/2026;RH;Admissão;Crítica;Fechado;21.2;1831.74
+CH-0007;17/07/2026;RH;Folha;Média;Aberto;14.1;940.53
+CH-0008;13/06/2026;Qualidade;Não conformidade;Média;Fechado;10.6;1140.12
+CH-0009;16/07/2026;Logística;Atraso de material;Baixa;Fechado;12.0;1088.22
+CH-0010;02/07/2026;RH;Admissão;Baixa;Fechado;10.3;1227.91
+CH-0011;11/08/2026;Financeiro;Nota fiscal;Baixa;Fechado;9.1;970.38
+CH-0012;05/07/2026;TI;Sistema ERP;Baixa;Em andamento;4.0;350.15
+CH-0013;28/06/2026;Logística;Atraso de material;Média;Fechado;10.9;707.04
+CH-0014;11/08/2026;Financeiro;Pagamento;Média;Aberto;7.3;563.07
+CH-0015;17/07/2026;TI;Acesso;Baixa;Em andamento;3.7;179.57
+CH-0016;20/08/2026;Qualidade;Auditoria;Baixa;Fechado;9.9;888.33
+CH-0017;16/08/2026;TI;Sistema ERP;Crítica;Fechado;13.9;637.47
+CH-0018;27/08/2026;Manutenção;Preventiva;Alta;Aberto;12.9;1324.12
+CH-0019;08/07/2026;Manutenção;Ferramental;Média;Fechado;19.9;1288.61
+CH-0020;04/08/2026;Qualidade;Calibração;Crítica;Aberto;14.2;956.84
+CH-0021;17/08/2026;RH;Folha;Baixa;Fechado;15.9;1815.5
+CH-0022;12/07/2026;RH;Benefícios;Média;Fechado;18.3;1321.69
+CH-0023;08/06/2026;Qualidade;Calibração;Baixa;Fechado;14.3;1518.68
+CH-0024;17/06/2026;Qualidade;Calibração;Média;Em andamento;12.3;705.83
+CH-0025;25/07/2026;RH;Benefícios;Crítica;Em andamento;19.4;1910.34
+CH-0026;23/08/2026;Financeiro;Reembolso;Média;Aberto;4.4;346.99
+CH-0027;09/06/2026;Qualidade;Calibração;Média;Fechado;10.3;518.34
+CH-0028;30/06/2026;Manutenção;Ferramental;Baixa;Fechado;16.1;1123.49
+CH-0029;06/07/2026;Qualidade;Auditoria;Média;Fechado;14.7;1291.08
+CH-0030;31/07/2026;Qualidade;Auditoria;Alta;Fechado;15.2;794.5
+CH-0031;25/07/2026;Logística;Atraso de material;Média;Aberto;12.1;1130.91
+CH-0032;14/07/2026;TI;Sistema ERP;Alta;Fechado;6.5;385.9
+CH-0033;18/06/2026;TI;Sistema ERP;Média;Fechado;5.0;391.17
+CH-0034;07/06/2026;Manutenção;Máquina parada;Média;Fechado;20.8;959.02
+CH-0035;22/06/2026;Qualidade;Não conformidade;Média;Fechado;14.3;820.07
+CH-0036;04/07/2026;TI;Sistema ERP;Crítica;Aberto;3.1;205.82
+CH-0037;11/08/2026;Financeiro;Pagamento;Média;Fechado;9.8;483.99
+CH-0038;08/06/2026;RH;Admissão;Alta;Fechado;14.0;1243.39
+CH-0039;21/06/2026;RH;Folha;Baixa;Fechado;12.7;636.23
+CH-0040;16/06/2026;TI;Acesso;Crítica;Fechado;7.1;627.77
+CH-0041;11/06/2026;RH;Admissão;Média;Fechado;5.1;307.63
+CH-0042;01/07/2026;Logística;Inventário;Baixa;Fechado;7.0;653.89
+CH-0043;10/06/2026;Logística;Expedição;Baixa;Fechado;6.7;571.66
+CH-0044;17/06/2026;Logística;Inventário;Crítica;Aberto;12.3;1364.63
+CH-0045;21/06/2026;Logística;Expedição;Média;Fechado;5.2;548.77
+CH-0046;25/08/2026;Manutenção;Máquina parada;Alta;Fechado;22.2;2103.54
+CH-0047;15/06/2026;Logística;Inventário;Alta;Aberto;9.4;571.49
+CH-0048;27/08/2026;Qualidade;Não conformidade;Média;Fechado;12.0;979.68
+CH-0049;21/08/2026;Manutenção;Preventiva;Média;Fechado;19.2;1781.44
+CH-0050;27/07/2026;Qualidade;Não conformidade;Média;Fechado;10.1;461.82
+CH-0051;20/06/2026;Financeiro;Nota fiscal;Média;Aberto;7.5;409.19
+CH-0052;06/06/2026;Logística;Atraso de material;Alta;Fechado;7.2;458.75
+CH-0053;11/08/2026;Logística;Atraso de material;Alta;Fechado;6.7;768.77
+CH-0054;23/07/2026;Qualidade;Auditoria;Baixa;Aberto;8.8;615.24
+CH-0055;02/07/2026;Financeiro;Reembolso;Baixa;Aberto;13.7;1498.7
+CH-0056;29/07/2026;Qualidade;Não conformidade;Média;Aberto;13.8;1522.82
+CH-0057;24/08/2026;Manutenção;Ferramental;Baixa;Fechado;19.2;1265.94
+CH-0058;22/07/2026;RH;Folha;Média;Aberto;6.1;426.0
+CH-0059;04/07/2026;Manutenção;Ferramental;Baixa;Em andamento;13.9;1078.53
+CH-0060;26/07/2026;Logística;Expedição;Média;Fechado;9.4;694.56
+CH-0061;03/07/2026;Qualidade;Calibração;Baixa;Fechado;4.6;443.97
+CH-0062;25/08/2026;Financeiro;Nota fiscal;Baixa;Fechado;8.3;964.17
+CH-0063;11/07/2026;RH;Benefícios;Média;Fechado;14.9;1415.75
+CH-0064;29/08/2026;TI;Hardware;Baixa;Fechado;2.9;221.95
+CH-0065;23/06/2026;Financeiro;Nota fiscal;Média;Fechado;8.9;592.01
+CH-0066;17/08/2026;RH;Folha;Média;Fechado;12.0;937.94
+CH-0067;31/07/2026;RH;Admissão;Alta;Em andamento;11.6;768.89
+CH-0068;19/08/2026;Financeiro;Pagamento;Média;Aberto;4.6;466.14
+CH-0069;29/06/2026;Logística;Atraso de material;Alta;Fechado;16.3;1480.78
+CH-0070;24/07/2026;TI;Hardware;Alta;Fechado;7.5;741.57
+CH-0071;22/07/2026;TI;Acesso;Baixa;Fechado;10.0;1027.53
+CH-0072;29/06/2026;TI;Acesso;Baixa;Em andamento;5.2;436.0
+CH-0073;02/07/2026;RH;Admissão;Crítica;Fechado;21.4;1815.47
+CH-0074;11/07/2026;RH;Admissão;Crítica;Aberto;21.7;1973.59
+CH-0075;25/07/2026;RH;Benefícios;Alta;Fechado;16.0;1289.61
+CH-0076;21/08/2026;Qualidade;Não conformidade;Baixa;Aberto;7.0;569.41
+CH-0077;27/07/2026;Logística;Atraso de material;Baixa;Fechado;7.6;649.89
+CH-0078;30/06/2026;Qualidade;Auditoria;Média;Fechado;12.6;769.19
+CH-0079;13/07/2026;TI;Sistema ERP;Média;Fechado;5.8;654.6
+CH-0080;03/06/2026;Financeiro;Reembolso;Alta;Aberto;12.0;882.34
+CH-0081;09/07/2026;Logística;Expedição;Alta;Aberto;11.0;1111.7
+CH-0082;29/06/2026;RH;Benefícios;Média;Fechado;11.1;903.8
+CH-0083;25/08/2026;Logística;Expedição;Média;Fechado;9.7;529.35
+CH-0084;04/06/2026;RH;Folha;Crítica;Fechado;22.1;2093.42
+CH-0085;25/07/2026;Financeiro;Nota fiscal;Baixa;Fechado;11.8;718.32
+CH-0086;19/07/2026;Logística;Atraso de material;Baixa;Em andamento;8.9;681.89
+CH-0087;03/06/2026;TI;Sistema ERP;Alta;Fechado;7.0;351.02
+CH-0088;04/06/2026;Manutenção;Máquina parada;Crítica;Fechado;21.8;1014.32
+CH-0089;17/06/2026;Qualidade;Auditoria;Média;Fechado;13.2;847.68
+CH-0090;17/08/2026;Qualidade;Não conformidade;Média;Aberto;8.9;476.95
+CH-0091;14/06/2026;Logística;Expedição;Média;Em andamento;2.2;160.93
+CH-0092;10/06/2026;Qualidade;Calibração;Média;Aberto;7.0;442.5
+CH-0093;27/08/2026;Logística;Inventário;Média;Fechado;13.2;937.73
+CH-0094;18/07/2026;Financeiro;Nota fiscal;Baixa;Fechado;8.5;390.57
+CH-0095;14/06/2026;TI;Acesso;Média;Fechado;7.6;429.2
+CH-0096;06/08/2026;Financeiro;Pagamento;Crítica;Fechado;12.3;1299.06
+CH-0097;30/07/2026;TI;Acesso;Média;Aberto;4.3;461.41
+CH-0098;28/07/2026;Logística;Inventário;Baixa;Fechado;13.8;1252.69
+CH-0099;04/06/2026;Logística;Inventário;Média;Fechado;5.2;334.76
+CH-0100;29/08/2026;RH;Folha;Alta;Fechado;12.2;1021.71
+CH-0101;01/07/2026;Manutenção;Preventiva;Alta;Fechado;14.2;1326.89
+CH-0102;03/06/2026;TI;Hardware;Baixa;Fechado;0.5;48.44
+CH-0103;14/08/2026;Financeiro;Nota fiscal;Média;Fechado;3.4;293.35
+CH-0104;29/07/2026;Financeiro;Reembolso;Baixa;Fechado;17.4;940.46
+CH-0105;16/06/2026;Logística;Inventário;Alta;Em andamento;7.3;732.89
+CH-0106;15/08/2026;Financeiro;Reembolso;Crítica;Fechado;12.6;834.43
+CH-0107;08/07/2026;Qualidade;Não conformidade;Baixa;Fechado;13.7;898.35
+CH-0108;08/07/2026;RH;Benefícios;Média;Fechado;12.3;1354.66
+CH-0109;02/06/2026;Manutenção;Preventiva;Média;Fechado;12.2;596.01
+CH-0110;09/06/2026;Manutenção;Máquina parada;Média;Fechado;14.7;1355.46
+CH-0111;20/06/2026;Qualidade;Auditoria;Alta;Em andamento;11.9;1033.58
+CH-0112;16/08/2026;RH;Benefícios;Alta;Fechado;13.2;1111.35
+CH-0113;09/07/2026;TI;Sistema ERP;Alta;Em andamento;3.6;326.6
+CH-0114;27/06/2026;Manutenção;Máquina parada;Média;Fechado;17.9;914.49
+CH-0115;10/08/2026;Qualidade;Não conformidade;Baixa;Fechado;6.2;414.44
+CH-0116;30/08/2026;Logística;Atraso de material;Baixa;Aberto;9.2;463.11
+CH-0117;20/08/2026;Logística;Atraso de material;Média;Aberto;8.5;525.82
+CH-0118;19/06/2026;Logística;Expedição;Baixa;Fechado;9.4;639.87
+CH-0119;07/07/2026;RH;Admissão;Média;Fechado;11.0;719.6
+CH-0120;27/07/2026;TI;Hardware;Baixa;Fechado;7.9;611.48

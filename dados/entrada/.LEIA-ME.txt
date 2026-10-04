@@ -1,0 +1,3 @@
+Pasta de entrada dos agentes. Tudo que estiver aqui pode ser lido por eles.
+Envie arquivos pela página http://<servidor>:8000/arquivos ou copie direto nesta pasta.
+exemplo_chamados.csv é um conjunto SINTÉTICO (fictício) para testar a POC.

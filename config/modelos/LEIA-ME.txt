@@ -1,0 +1,12 @@
+Modelos opcionais usados pelo exportador:
+
+  modelo.pptx      → modelo de apresentação próprio.
+                     Layout 0 = capa (título + subtítulo); layout 1 = título + conteúdo.
+                     Slides de exemplo do modelo são removidos automaticamente.
+
+  referencia.docx  → documento Word com os estilos desejados (Título 1, Normal, Tabela...).
+                     O Pandoc copia os estilos dele para os DOCX gerados.
+
+Sem esses arquivos, o PPTX é desenhado na identidade Steve Lab (16:9, símbolo de três camadas
+na capa, filete ciano → azul → roxo, rodapé "Steve Lab · Ideias → Dados → Impacto · © Estevão Silva")
+e o DOCX usa os estilos padrão do Pandoc.

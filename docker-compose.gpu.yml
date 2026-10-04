@@ -1,0 +1,24 @@
+# Override para o servidor com GPU NVIDIA.
+# Requer NVIDIA Container Toolkit instalado no host.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Para acelerar o Docling com GPU, troque a imagem por uma variante CUDA
+  # com tag explícita (as imagens CUDA não têm tag "latest"), por exemplo:
+  # docling:
+  #   image: quay.io/docling-project/docling-serve-cu128:<versão>
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]

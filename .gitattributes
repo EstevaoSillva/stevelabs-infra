@@ -1,0 +1,8 @@
+# Scripts e configs rodam no Linux (WSL): mantenha LF mesmo se o repositório
+# for clonado no Windows. Um CRLF em .sh ou .env quebra o bash e o compose.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.csv -text
+*.pptx binary
+*.docx binary
+*.ttf binary
